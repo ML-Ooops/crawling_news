@@ -27,3 +27,9 @@ new crawling, store in the NOSQL(mongoDB)
 
 단점 : 
     언어 번역이 필요함
+
+## remaining task
+1. 일정시간마다 자동으로 api가 실행되어 정보를 수집
+2. 수집된 정보 DB에 일괄적으로 업데이트
+3. 업데이트 된 DB의 정보 카테고리화
+
