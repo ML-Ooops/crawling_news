@@ -1,8 +1,21 @@
 # crawling_news
 new crawling, store in the NOSQL(mongoDB)
 
+using license : https://www.newstore.or.kr/store/prodct/license/test-bed.do
 
-## remain task()
-1. 현재 수집 api를 이용할지 다른 것을 활용할지 결정(조건 : 분야가 나뉘어 있을 것)
-   후보 1. News API(영문, 다양한 설명이 포함되어 있음. 단 분야의 표시가 없음, 무료)
+현재는 테스트 용도의 라이센스를 사용하여 뉴스 크롤링을 진행한다
 
+## 사용방법
+### setting
+  1. 검색하고자 하는 카테고리의 지정. (현재 category.txt에 포함된 카테고리 검색)
+  2. requirement install
+
+  ```
+  pip install -r requriements
+  ```
+
+### use
+  시스템 프롬프트를 사용하여 실행
+  ```
+  (main.py 파일 위치)  > python main.py
+  ```
