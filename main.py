@@ -1,41 +1,103 @@
-import uvicorn
-from fastapi import FastAPI, HTTPException, Query
-from pydantic import BaseModel
 import requests
 from datetime import datetime, timedelta
-app = FastAPI()
+import json
+from pymongo import MongoClient
+import schedule
+import time
 
-# News API 키 설정
-API_KEY = ""
-@app.get("/everything/")
-async def get_everything(
-        from_date: str = Query(..., description="검색 시작 날짜 (YYYY-MM-DD 형식)"),
-        q: str = Query("", description="검색 키워드")
-):
-    url = "https://newsapi.org/v2/everything"
-    params = {
-        "apiKey": API_KEY,
-        "sortBy": "publishedAt",
-        "from": from_date
-    }
+# Function to read categories from a file
+def read_categories_from_file(file_path):
+    with open(file_path, 'r') as file:
+        categories = [line.strip() for line in file if line.strip()]
+    return categories
 
-    try:
-        from_date_obj = datetime.strptime(from_date, "%Y-%m-%d")
-        params["from"] = from_date_obj.strftime("%Y-%m-%d")
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid date format. Please use YYYY-MM-DD.")
+# Read categories from 'categories.txt' file
+categories = read_categories_from_file('categories.txt')
 
-    if q:
-        params["q"] = q
-    else:
-        # 기본 검색 키워드 설정
-        params["q"] = "news"
+def fetch_and_store_news():
+    # Set up MongoDB client (using localhost and default port)
+    client = MongoClient('mongodb://localhost:27017/')
+    
+    # Select the database and collection
+    db = client['news_database']
+    collection = db['news_collection']
 
-    response = requests.get(url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        return data["articles"]
-    else:
-        raise HTTPException(status_code=response.status_code, detail="API 요청 실패")
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # Clear existing data in the collection
+    collection.delete_many({})
+    print("Existing data cleared.")
+
+    all_news_data = []
+
+    for category in categories:
+        for i in range(10):
+            # Calculate the date range for each iteration
+            end_date = datetime.today() - timedelta(days=i*5)
+            start_date = end_date - timedelta(days=5)
+            
+            end_date_str = end_date.strftime('%Y-%m-%d')
+            start_date_str = start_date.strftime('%Y-%m-%d')
+
+            params = {
+                "argument": {
+                    "published_at": {
+                        "from": start_date_str,
+                        "until": end_date_str
+                    },
+                    "category": [category],
+                    "sort": {
+                        "date": "desc"
+                    },
+                    "return_from": "0",
+                    "return_size": "10000",
+                    "fields": [
+                        "news_id",
+                        "published_at",
+                        "title",
+                        "content",
+                        "provider",
+                        "byline",
+                        "category",
+                        "category_incident",
+                        "provider_link_page",
+                        "printing_page"
+                    ]
+                },
+                "access_key": "newstoresample"
+            }
+            headers = {'Content-type': 'application/json'}
+            response = requests.post("https://www.newstore.or.kr/api-newstore/v1/search/newsAllList.json", json=params, headers=headers)
+
+            if response.status_code == 200:
+                # Decode the response content
+                response_data = response.json()
+                if "returnObject" in response_data:
+                    decoded_data = json.loads(response_data["returnObject"])
+                    if isinstance(decoded_data, dict):
+                        all_news_data.append(decoded_data)
+                    elif isinstance(decoded_data, list):
+                        all_news_data.extend(decoded_data)
+                else:
+                    print(json.dumps(response_data, indent=2, ensure_ascii=False))
+            else:
+                print(response.content)
+
+    # Save all collected data to MongoDB
+    if all_news_data:
+        try:
+            # Insert data
+            collection.insert_many(all_news_data)
+            print("Data successfully stored.")
+        except Exception as e:
+            print(f"Error occurred while storing data to MongoDB: {e}")
+
+if __name__ == '__main__':
+    # Initial execution
+    fetch_and_store_news()
+    print("first_search complete")
+    #schedule.every(12).hours.do(fetch_and_store_news)
+
+    schedule.every(1).minutes.do(fetch_and_store_news)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

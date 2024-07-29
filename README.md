@@ -1,29 +1,22 @@
 # crawling_news
 new crawling, store in the NOSQL(mongoDB)
 
-## 예시 출력 형식
-'''json
-  {
-    "source": {
-      "id": null,
-      "name": "Tom's Hardware UK"
-    },
-    "author": "Anton Shilov",
-    "title": "China plans state ownership for all of its rare earth metal resources — regulation comes into effect on Oct 1",
-    "description": "New regulation in China prohibits any organization or individual from encroaching upon or destroying rare-earth resources.",
-    "url": "https://www.tomshardware.com/tech-industry/china-plans-state-ownership-for-all-of-its-rare-earth-metal-resources-regulation-comes-into-effect-on-oct-1",
-    "urlToImage": "https://cdn.mos.cms.futurecdn.net/qmLD6J8LgbFgNwEKpFUcmn-1200-80.jpg",
-    "publishedAt": "2024-07-01T11:04:09Z",
-    "content": "China has enacted a new regulation, effective October 1, asserting state ownership over its rare-earth materials required in semiconductor production, reports Nikkei. This move aims to secure nationa… [+2756 chars]"
-  }
-'''
+using license : https://www.newstore.or.kr/store/prodct/license/test-bed.do
 
-뉴스 api
-외국에 다양한 뉴스에 대해서 가져올 수 있다. 기존 문제인 키워드 검색 부분을 일차적으로 해결 
-장점 : 
-    무료
-    빠른 성능
+현재는 테스트 용도의 라이센스를 사용하여 뉴스 크롤링을 진행한다
 
+## 사용방법
+### setting
+  1. 검색하고자 하는 카테고리의 지정. (현재 category.txt에 포함된 카테고리 검색)
+  2. requirement install
 
-단점 : 
-    언어 번역이 필요함
+  ```
+  pip install -r requriements
+  ```
+
+### use
+  시스템 프롬프트를 사용하여 실행
+  ```
+  (main.py 파일 위치)  > python main.py
+  ```
+
