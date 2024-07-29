@@ -19,4 +19,3 @@ using license : https://www.newstore.or.kr/store/prodct/license/test-bed.do
   ```
   (main.py 파일 위치)  > python main.py
   ```
-
