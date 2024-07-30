@@ -19,3 +19,11 @@ using license : https://www.newstore.or.kr/store/prodct/license/test-bed.do
   ```
   (main.py 파일 위치)  > python main.py
   ```
+
+### 카테고리 종류
+IT_과학>과학
+IT_과학>보안
+IT_과학>모바일
+IT_과학>콘텐츠
+IT_과학>인터넷_SNS
+IT_과학>IT_과학일반
